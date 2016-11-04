@@ -6,8 +6,6 @@ from simple_database.exceptions import ValidationError
 from simple_database.config import BASE_DB_FILE_PATH
 import json
 
-# BASE_DB_FILE_PATH = '/tmp/simple_database/'
-
 class RowObject(object):
     def __init__(self, row):
         self._row = row
@@ -22,64 +20,37 @@ class Table(object):
         self._table_dict = table_dict
         self._columns = table_dict['columns']
         self._data = table_dict['data']
-        # self.db.create_table('authors', columns=[
-        # {'name': 'id', 'type': 'int'}], etc
-        # open json, assign it to variable called json_object. write to it.
-        # json_object[name] = {} # create empty table (eg: json_object['authors'] = {})
-        # json_object['columns'] = columns # set the columns
-        # json_object['data'] = {}
-        # need to save this somehow. do we return the json object?
         
     def __getattr__(self, name):
         return self._data[name]
 
     def insert(self, *args):
-        # open json, assign it to variable called table
-        # get name of table, assign it to table_name
-
-        #number_of_columns = len(table[table_name]['columns'])
-        # if len(args) != number_of_columns:
         if len(args) != len(self._columns):
             raise ValidationError('Invalid amount of field')
-        
-        # find the line under data that has one less comma, that is the end of the current data
- 
-        # for arg in args:
-        #     if type(arg) != columns_list[0]['type']:
-        #     pass
-        #check that each argument has the correct type
+
         row = {}
-        for arg, col in zip(args, self._columns):
-            argtype = type(arg).__name__
-            coltype, colname = col['type'], col['name']
-            if argtype != coltype:
-                raise ValidationError('Invalid type of field "{}": Given "{}", expected "{}"'.format(colname, argtype, coltype))
-            row[colname] = arg
+        for argument, column in zip(args, self._columns):
+            argument_type = type(argument).__name__
+            column_type, column_name = column['type'], column['name']
+            if argument_type != column_type:
+                raise ValidationError('Invalid type of field "{}": Given "{}", expected "{}"'.format(column_name, argument_type, column_type))
+            row[column_name] = argument
+            
         self._data.append(row)
         self.db._save_db()
 
     def query(self, **kwargs):
-        return (RowObject(row) for row in self._data if all(row[name] == value for name, value in kwargs.items()))
-            
+        for row in self._data:
+            if all(row[name] == value for name, value in kwargs.items()):
+                yield RowObject(row)
 
     def all(self):
         return (RowObject(row) for row in self._data)
 
     def count(self):
-        # again, open the json file and assign it to a variable called table
-        # get the table_name
-        # return len(table[table_name]['data'])
         return len(self._data)
 
     def describe(self):
-        # something to open the .json file and assign it to a variable
-        # copypasted the code we'll modify it for our purposes
-        # weather = urllib2.urlopen('url')
-        # json_table = weather.read()
-        # table = json.loads(json_table)
-        
-        # need to get the table_name like authors
-        # return table[table_name]['columns']
         return self._columns
 
 class DataBase(object):
