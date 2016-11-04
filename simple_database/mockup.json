@@ -1,0 +1,16 @@
+
+{
+  "authors": {
+    "columns": [
+      {"name": "id", "type": "int"},
+      {"name": "name", "type": "str"},
+      {"name": "birth_date", "type": "date"},
+      {"name": "nationality", "type": "str"},
+      {"name": "alive", "type": "bool"}
+    ],
+    "data": [
+      {"id": "1", "name": "jorge", "birth_date": "1914-8-26", "nationality": "argentinian", "alive": "false"},
+      {"id": "2", "name": "jane doe", "birth_date": "1980-11-11", "nationality": "british", "alive": "true"}
+    ]
+  },
+}
